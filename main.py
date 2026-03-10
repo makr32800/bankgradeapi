@@ -18,7 +18,12 @@ def decrypt_data(encrypted_b64):
         raise FileNotFoundError("Private key file is missing on the server.")
         
     with open(PRIVATE_KEY_PATH, "rb") as k:
-        private_key = serialization.load_pem_public_key(k.read(), password=None)
+        # TAMA: load_pem_private_key ang kailangan natin para mag-decrypt
+        # At ang keyword ay 'password', hindi 'password' sa public key
+        private_key = serialization.load_pem_private_key(
+            k.read(), 
+            password=None  # Okay lang ang password=None dito dahil wala tayong passphrase
+        )
         
     ciphertext = base64.b64decode(encrypted_b64)
     plaintext = private_key.decrypt(
